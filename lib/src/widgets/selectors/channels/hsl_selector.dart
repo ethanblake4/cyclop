@@ -14,9 +14,7 @@ class ChannelSliders extends StatefulWidget {
 
   final ValueChanged<Color> onChange;
 
-  const ChannelSliders(
-      {Key key, @required this.selectedColor, @required this.onChange})
-      : super(key: key);
+  const ChannelSliders({Key key, @required this.selectedColor, @required this.onChange}) : super(key: key);
 
   @override
   _ChannelSlidersState createState() => _ChannelSlidersState();
@@ -25,7 +23,7 @@ class ChannelSliders extends StatefulWidget {
 class _ChannelSlidersState extends State<ChannelSliders> {
   bool HSLMode = true;
 
-  Color get color => widget.selectedColor;
+  Color get color => widget.selectedColor ?? Colors.black;
 
   @override
   Widget build(BuildContext context) => Tabs(

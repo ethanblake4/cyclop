@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../theme.dart';
-import 'color_picker.dart';
 import '../utils.dart';
+import 'color_picker.dart';
 import 'eyedrop/eye_dropper_layer.dart';
 
 const _buttonSize = 48.0;
@@ -79,24 +79,36 @@ class _ColorButtonState extends State<ColorButton> with WidgetsBindingObserver {
   }
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTapDown: (details) => _colorPick(context, details),
-        child: Container(
-          width: widget.size,
-          height: widget.size,
-          decoration: widget.decoration ??
-              BoxDecoration(
-                shape: widget.boxShape,
-                color: widget.color,
-                border: Border.all(width: 4, color: Colors.white),
-                boxShadow: darkShadowBox,
-              ),
-        ),
-      );
+  Widget build(BuildContext context) => widget.color == null
+      ? TextButton(
+          onPressed: () {
+            _colorPick(context,
+                TapDownDetails(globalPosition: (context.findRenderObject() as RenderBox).localToGlobal(Offset.zero)));
+          },
+          child: Text('<default>'),
+          style: ButtonStyle(
+            foregroundColor: ButtonStyleButton.allOrNull(Colors.white),
+          ))
+      : MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTapDown: (details) => _colorPick(context, details),
+            child: Container(
+              width: widget.size,
+              height: widget.size,
+              decoration: widget.decoration ??
+                  BoxDecoration(
+                    shape: widget.boxShape,
+                    color: widget.color,
+                    border: Border.all(width: 4, color: Colors.white),
+                    boxShadow: darkShadowBox,
+                  ),
+            ),
+          ),
+        );
 
   void _colorPick(BuildContext context, TapDownDetails details) async {
-    final selectedColor =
-        await showColorPicker(context, details.globalPosition);
+    final selectedColor = await showColorPicker(context, details.globalPosition);
     widget.onColorChanged(selectedColor);
   }
 
@@ -112,12 +124,10 @@ class _ColorButtonState extends State<ColorButton> with WidgetsBindingObserver {
 
   OverlayEntry _buildPickerOverlay(Offset offset, BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final left = offset.dx + pickerWidth < size.width - 30
-        ? offset.dx + _buttonSize
-        : offset.dx - pickerWidth - _buttonSize;
-    final top = offset.dy - pickerHeight / 2 > 0
-        ? min(offset.dy - pickerHeight / 2, size.height - pickerHeight - 50)
-        : 50.0;
+    final left =
+        offset.dx + pickerWidth < size.width - 30 ? offset.dx + _buttonSize : offset.dx - pickerWidth - _buttonSize;
+    final top =
+        offset.dy - pickerHeight / 2 > 0 ? min(offset.dy - pickerHeight / 2, size.height - pickerHeight - 50) : 50.0;
 
     return OverlayEntry(
       maintainState: true,
@@ -126,9 +136,7 @@ class _ColorButtonState extends State<ColorButton> with WidgetsBindingObserver {
             '${MediaQuery.of(context).viewInsets.bottom}');
         return Positioned(
           left: isPhoneScreen ? (size.width - pickerWidth) / 2 : left,
-          top: isPhoneScreen
-              ? (keyboardOn ? 20 : (size.height - pickerHeight) / 2)
-              : top,
+          top: isPhoneScreen ? (keyboardOn ? 20 : (size.height - pickerHeight) / 2) : top,
           bottom: isPhoneScreen ? 20 + bottom : null,
           child: IgnorePointer(
             ignoring: hidden,
@@ -188,11 +196,9 @@ class _ColorButtonState extends State<ColorButton> with WidgetsBindingObserver {
 
   @override
   void didChangeMetrics() {
-    final keyboardTopPixels =
-        window.physicalSize.height - window.viewInsets.bottom;
+    final keyboardTopPixels = window.physicalSize.height - window.viewInsets.bottom;
 
-    final newBottom = (window.physicalSize.height - keyboardTopPixels) /
-        window.devicePixelRatio;
+    final newBottom = (window.physicalSize.height - keyboardTopPixels) / window.devicePixelRatio;
 
     setState(() => bottom = newBottom);
     pickerOverlay?.markNeedsBuild();

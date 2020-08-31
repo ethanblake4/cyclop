@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import 'selectors/channels/hsl_selector.dart';
-import 'selectors/grid_color_selector.dart';
-import 'selectors/user_swatch_selector.dart';
 import '../theme.dart';
 import '../widgets/opacity/opacity_slider.dart';
 import '../widgets/tabbar.dart';
 import 'picker/color_selector.dart';
 import 'picker/title_bar.dart';
+import 'selectors/channels/hsl_selector.dart';
+import 'selectors/grid_color_selector.dart';
+import 'selectors/user_swatch_selector.dart';
 
 const pickerWidth = 316.0;
 
@@ -95,11 +95,7 @@ class _ColorPickerState extends State<ColorPicker> {
                   Flexible(
                     fit: FlexFit.loose,
                     child: Tabs(
-                      labels: [
-                        'Material',
-                        'Sliders',
-                        if (widget.config.enableLibrary) 'Library'
-                      ],
+                      labels: ['Material', 'Sliders', if (widget.config.enableLibrary) 'Library'],
                       views: [
                         GridColorSelector(
                           selectedColor: widget.selectedColor,
@@ -122,20 +118,18 @@ class _ColorPickerState extends State<ColorPicker> {
                   if (widget.config.enableOpacity)
                     RepaintBoundary(
                       child: OpacitySlider(
-                        selectedColor: widget.selectedColor,
-                        opacity: widget.selectedColor.opacity,
+                        selectedColor: widget.selectedColor ?? Colors.black,
+                        opacity: widget.selectedColor?.opacity ?? 1,
                         onChange: _onOpacityChange,
                       ),
                     ),
                   defaultDivider,
                   ColorSelector(
-                    color: widget.selectedColor,
+                    color: widget.selectedColor ?? Colors.black,
                     withAlpha: widget.config.enableOpacity,
                     thumbWidth: 96,
                     onColorChanged: widget.onColorSelected,
-                    onEyePick: widget.config.enableEyePicker
-                        ? widget.onEyeDropper
-                        : null,
+                    onEyePick: widget.config.enableEyePicker ? widget.onEyeDropper : null,
                     onFieldFocus: () {
                       print('FIELDFOCUS');
                     },
@@ -150,6 +144,5 @@ class _ColorPickerState extends State<ColorPicker> {
     );
   }
 
-  void _onOpacityChange(double value) =>
-      widget.onColorSelected(widget.selectedColor.withOpacity(value));
+  void _onOpacityChange(double value) => widget.onColorSelected(widget.selectedColor.withOpacity(value));
 }
